@@ -1,0 +1,25 @@
+//.gitignore
+
+node_modules
+# package-lock.json
+
+build
+dist
+
+# macOS
+.DS_Store
+
+# VCODE Debugger Lauch
+.vscode
+!.vscode/launch.json
+.vscode/settings.json
+
+./dist
+lanza.sh
+Dockerfile
+
+# Swagger tests
+api
+
+.vscode
+.env
