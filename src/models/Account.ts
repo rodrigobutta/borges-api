@@ -1,9 +1,5 @@
-import { Model, Table, Column, HasMany, DataType, BelongsTo, ForeignKey } from 'sequelize-typescript';
-import { AccountFiles } from './AccountFiles';
+import { Model, Table, Column, DataType, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { AccountGroup } from './AccountGroup';
-import { Inventory } from './Inventory';
-
-import { Lead } from './Lead';
 
 @Table({
   tableName: 'accounts',
@@ -106,11 +102,6 @@ export class Account extends Model {
   })
   contactPhone!: string;
 
-  @HasMany(() => Inventory, {
-    onDelete: 'CASCADE',
-  })
-  inventory: Inventory[] = [];
-
   @Column({
     type: DataType.INTEGER,
   })
@@ -153,12 +144,4 @@ export class Account extends Model {
 
   @BelongsTo(() => AccountGroup)
   accountGroup: AccountGroup = new AccountGroup();
-
-  @HasMany(() => Lead)
-  leads: Lead[] = [];
-
-  @HasMany(() => AccountFiles, {
-    onDelete: 'CASCADE',
-  })
-  accountFiles: AccountFiles[] = [];
 }

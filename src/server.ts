@@ -7,7 +7,6 @@ import { sequelize } from './providers/sequelize';
 import settings from './settings';
 import { KeycloakJWT, KeycloakGroup } from './types/keycloak';
 import { Profile } from './models/Profile';
-import { Lead } from './models/Lead';
 import { getApiUrl } from './lib/url';
 import { Client } from './models/Client';
 
@@ -23,9 +22,6 @@ declare global {
       authAccountId: number;
       authUserUUID?: string;
 
-      // Depends on the match that was made between the Keycloak user and the API leads table (chained with users table)
-      authLead?: Lead;
-      authLeadId?: number | null;
       authCustomerId?: number | null;
 
       // Depends on the Keycloak client that was used to authenticate

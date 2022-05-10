@@ -17,7 +17,6 @@ import { ProfileCapability } from '../models/ProfileCapability';
 import { AccountGroupPermission } from '../models/AccountGroupPermission';
 import { AccountGroupRole } from '../models/AccountGroupRole';
 import { User } from '../interfaces/User';
-import { ACCOUNT_GROUP_DEALER } from '../providers/besmart/constants';
 import { capitalizeString } from './common';
 import NotFoundException from '../exceptions/NotFoundException';
 
@@ -718,7 +717,7 @@ export const createDealerWithUser = async ({
     const account = await createAccount({
       companyIDNumber: companyIDNumber,
       name: accountName,
-      accountGroupId: ACCOUNT_GROUP_DEALER,
+      accountGroupId: 1,
       city: accountCity,
       state: accountState,
       zipCode: accountZipCode,

@@ -6,7 +6,6 @@ import AuthTokenInvalidException from '../exceptions/AuthTokenInvalidException';
 import settings from '../settings';
 // import ProfileNotFoundException from '../exceptions/UserNotFoundException';
 import { Profile } from '../models/Profile';
-import { Lead } from '../models/Lead';
 import { CONSUMER_ACCOUNT_ID, PANEL_ACCOUNT_ID } from '../constants';
 import { KeycloakJWT, KeycloakGroup } from '../types/keycloak';
 import InternalError from '../exceptions/InternalError';
@@ -119,16 +118,6 @@ async function authMiddleware(request: Request, _: Response, next: NextFunction)
         // should only be filled for Consumer users (Customers)
         if (group === KeycloakGroup.Consumer) {
           try {
-            const lead = await Lead.findOne({
-              where: {
-                userId: profile.id,
-                accountId: profile.accountId,
-              },
-            });
-            if (lead) {
-              request.authLeadId = lead?.id;
-              request.authCustomerId = lead?.customerId;
-            }
           } catch (error) {
             next(new InternalError(error));
           }

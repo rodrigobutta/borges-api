@@ -3,22 +3,9 @@ import { Filter } from '../dto/Filter';
 import { Op, Sequelize, WhereOptions } from 'sequelize';
 import { addCondition } from './filterUtils';
 
-export function getWhereCustomer({
-  filters,
-  isDealer,
-  authAccountId,
-}: {
-  filters: any;
-  isDealer: boolean;
-  authAccountId: number;
-}) {
+export function getWhereCustomer({ filters }: { filters: any; isDealer: boolean; authAccountId: number }) {
   let where: WhereOptions = {};
   let conditions: Map<any, any> = new Map();
-
-  if (isDealer) {
-    //Include Lead is required
-    conditions.set('$leads.accountId$', authAccountId);
-  }
 
   if (filters) {
     CUSTOMER_FILTERS.forEach((f: Filter) => {

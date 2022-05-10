@@ -1,10 +1,5 @@
-import { Model, Table, Column, HasMany, HasOne, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { CustomerAnalysis } from './CustomerAnalysis';
-import { CustomerAnalysisLog } from './CustomerAnalysisLog';
+import { Model, Table, Column, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { CustomerFulfillmentStatus } from './CustomerFulfillmentStatus';
-import { Inventory } from './Inventory';
-
-import { Lead } from './Lead';
 
 const UNIQUE_CONSTRAINT_CUSTOMER_ACCOUNT: string = 'unique_lead_per_account';
 
@@ -26,13 +21,6 @@ export class Customer extends Model {
     allowNull: false,
   })
   citizenNumber!: string; // ex cpf
-
-  // @Column({
-  //   type: DataType.STRING,
-  //   unique: true,
-  //   allowNull: true,
-  // })
-  // cpf!: string; // TODO TMP while merged databases
 
   @Column({
     type: DataType.STRING,
@@ -119,18 +107,6 @@ export class Customer extends Model {
   })
   customerFulfillmentStatusId!: number;
 
-  @HasOne(() => CustomerAnalysis)
-  analysis: CustomerAnalysis = new CustomerAnalysis();
-
-  @HasMany(() => CustomerAnalysisLog)
-  analysisLogs: CustomerAnalysisLog[] = [];
-
-  @HasMany(() => Lead)
-  leads: Lead[] = [];
-
   @BelongsTo(() => CustomerFulfillmentStatus)
   fulfillmentStatus: CustomerFulfillmentStatus = new CustomerFulfillmentStatus();
-
-  @HasMany(() => Inventory)
-  inventory: Inventory[] = [];
 }

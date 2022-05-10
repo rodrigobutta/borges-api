@@ -1,4 +1,3 @@
-import { Op } from 'sequelize';
 import { CONSUMER_ACCOUNT_ID, PANEL_ACCOUNT_ID } from '../constants';
 import AlreadyExistsException from '../exceptions/AlreadyExistsException';
 import ForbiddenException from '../exceptions/ForbiddenException';
@@ -9,11 +8,7 @@ import { AccountGroupPermission } from '../models/AccountGroupPermission';
 import { AccountGroupRole } from '../models/AccountGroupRole';
 import { DealerCommissionTable } from '../models/DealerCommissionTable';
 import { DealerCommissionTableAssignment } from '../models/DealerCommissionTableAssignment';
-import { Inventory } from '../models/Inventory';
-import { LoanApplication } from '../models/LoanApplication';
 import { Location } from '../models/Location';
-import { Quote } from '../models/Quote';
-import { Status } from '../models/Status';
 
 export interface DealerTableAssignation {
   customerAnalysisScore: string;
@@ -52,139 +47,6 @@ export const createAccount = async ({
   if (!wasCreated) {
     throw new AlreadyExistsException(`Una cuenta con ID ${companyIDNumber} ya existe`);
   }
-
-  const accountId = account.id;
-
-  await Status.bulkCreate([
-    {
-      accountId,
-      name: 'Disponible',
-      color: '#33691e',
-    },
-    {
-      accountId,
-      name: 'Reservado',
-      color: '#795548',
-    },
-    {
-      accountId,
-      name: 'Bloqueado',
-      color: '#01579b',
-    },
-    {
-      accountId,
-      name: 'En preparación',
-      color: '#004d40',
-    },
-    {
-      accountId,
-      name: 'En tránsito',
-      color: '#827717',
-    },
-    {
-      accountId,
-      name: 'Vendido',
-      color: '#4a148c',
-    },
-  ]);
-
-  await DealerCommissionTableAssignment.bulkCreate([
-    {
-      accountId,
-      customerAnalysisScore: 'A',
-      dealerCommissionTableId: 1,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'A',
-      dealerCommissionTableId: 2,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'A',
-      dealerCommissionTableId: 3,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'A',
-      dealerCommissionTableId: 4,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'A',
-      dealerCommissionTableId: 5,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'B',
-      dealerCommissionTableId: 1,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'B',
-      dealerCommissionTableId: 2,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'B',
-      dealerCommissionTableId: 3,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'B',
-      dealerCommissionTableId: 4,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'B',
-      dealerCommissionTableId: 5,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'C',
-      dealerCommissionTableId: 1,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'C',
-      dealerCommissionTableId: 2,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'C',
-      dealerCommissionTableId: 3,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'C',
-      dealerCommissionTableId: 4,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'C',
-      dealerCommissionTableId: 5,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'D',
-      dealerCommissionTableId: 1,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'D',
-      dealerCommissionTableId: 2,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'D',
-      dealerCommissionTableId: 3,
-    },
-    {
-      accountId,
-      customerAnalysisScore: 'D',
-      dealerCommissionTableId: 4,
-    },
-  ]);
 
   await Location.create({
     name: 'Principal',
@@ -259,44 +121,6 @@ export const deleteAccount = async (accountId: number, authIsPanel?: boolean) =>
     if (accountId === CONSUMER_ACCOUNT_ID || accountId === PANEL_ACCOUNT_ID) {
       throw new ForbiddenException('Esta cuenta es de sistema y no puede ser eliminada');
     }
-
-    // get the Account inventory that will be used to find other related entities
-    const inventories = await Inventory.findAll({
-      attributes: ['id'],
-      where: {
-        accountId,
-      },
-      raw: true,
-    });
-    const inventoryIds = inventories.map(({ id }) => id);
-
-    // check if has Applications open
-    const activeLoanApplications = await LoanApplication.findAll({
-      where: {
-        inventoryId: { [Op.in]: inventoryIds },
-      },
-      raw: true,
-    });
-    if (activeLoanApplications.length > 0) {
-      throw new ForbiddenException(
-        `No se puede eliminar la cuenta porque tiene ${activeLoanApplications.length} aplicaciones activas`,
-      );
-    }
-
-    // console.log('inventoryIds', inventoryIds);
-    // console.log('activeLoanApplications', activeLoanApplications);
-
-    await Quote.destroy({
-      where: {
-        inventoryId: { [Op.in]: inventoryIds },
-      },
-    });
-
-    await Inventory.destroy({
-      where: {
-        accountId,
-      },
-    });
 
     await Account.destroy({
       where: {

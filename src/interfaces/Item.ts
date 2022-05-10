@@ -202,35 +202,6 @@ export interface SearchItem {
   body: Body;
 }
 
-export interface LoanAppErrors {
-  buyerErrors: any;
-  coupleErrors: any;
-  garantErrors: any;
-  addressVoucher: any;
-  rg: any;
-  vehicleCRVFileKey: any;
-}
-export interface PhysicalPerson {
-  person_type: string;
-  name: string;
-  mother_name: string;
-  birth_date: Date;
-  profession: string;
-  nationality: string;
-  marital_status: string;
-  is_pep: boolean;
-  property_system: string;
-  individual_document_number: string;
-  document_identification_number: string;
-  email: string;
-  phone: Phone;
-  address: Address;
-  spouse?: PhysicalPerson;
-  wedding_certificate?: DocumentIdentification;
-  document_identification?: DocumentIdentification;
-  proof_of_residence?: DocumentIdentification;
-}
-
 export interface Address {
   street: string;
   state: string;
