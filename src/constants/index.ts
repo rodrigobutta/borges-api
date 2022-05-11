@@ -41,10 +41,7 @@ export const USER_FILTERS: Filter[] = [
   new Filter('lastName', Filter.TYPE_TEXT),
 ];
 
-export const ACCOUNT_FILTERS: Filter[] = [
-  new Filter('name', Filter.TYPE_TEXT),
-  new Filter('salesPersonBorges', Filter.TYPE_VALUE),
-];
+export const ACCOUNT_FILTERS: Filter[] = [new Filter('name', Filter.TYPE_TEXT)];
 
 export const CUSTOMER_FILTERS: Filter[] = [
   new Filter('firstName', Filter.TYPE_VALUE),
@@ -54,3 +51,5 @@ export const CUSTOMER_FILTERS: Filter[] = [
 export const CUSTOMER_FILTERS_COMPLEX: Filter[] = [new Filter('name', Filter.TYPE_TEXT, 'firstName', 'lastName')];
 
 export const DEFAULT_DEALER_COMMISSION_TABLE_ID = 4;
+
+export const ACCOUNT_GROUP_DEALER = 3;

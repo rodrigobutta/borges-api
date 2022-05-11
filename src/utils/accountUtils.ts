@@ -1,4 +1,4 @@
-import { ACCOUNT_FILTERS, SALES_PERSON_BORGES } from '../constants';
+import { ACCOUNT_FILTERS } from '../constants';
 import { Filter } from '../dto/Filter';
 import { Sequelize, WhereOptions } from 'sequelize';
 import { addCondition } from './filterUtils';
@@ -65,14 +65,6 @@ export async function getTemplateInvitationMail() {
     '</table>' +
     '</div>\n    </body>\n  </html>\n'
   );
-}
-
-export function findSalesPersonBorges(id: any) {
-  return SALES_PERSON_BORGES?.find(item => item.id === id)?.value;
-}
-
-export function findSalesPersonBorgesByName(text: any) {
-  return SALES_PERSON_BORGES?.find(item => item.value === text)?.id;
 }
 
 const requiredFields = [

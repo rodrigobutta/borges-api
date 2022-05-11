@@ -19,6 +19,7 @@ import { ProfileCapability } from '../models/ProfileCapability';
 import { AccountGroup } from '../models/AccountGroup';
 import { AccountGroupPermission } from '../models/AccountGroupPermission';
 import { Client } from '../models/Client';
+import { AccountGroupRole } from '../models/AccountGroupRole';
 
 export const sequelize = new Sequelize(mysql.NAME, mysql.USERNAME, mysql.PASSWORD, {
   host: mysql.HOST,
@@ -44,6 +45,7 @@ export const sequelize = new Sequelize(mysql.NAME, mysql.USERNAME, mysql.PASSWOR
     ProfileCapability,
     AccountGroup,
     AccountGroupPermission,
+    AccountGroupRole,
     Client,
   ],
 });

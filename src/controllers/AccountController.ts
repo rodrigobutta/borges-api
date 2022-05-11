@@ -10,7 +10,6 @@ import { upload } from '../providers/aws/s3';
 import { UploadedFile } from 'express-fileupload';
 import { Sequelize } from 'sequelize';
 import {
-  findSalesPersonBorges,
   getTemplateInvitationMail,
   getWhereAccount,
   requiredFieldsCompleted,
@@ -24,9 +23,7 @@ import { sign } from 'jsonwebtoken';
 import path from 'path';
 import InternalError from '../exceptions/InternalError';
 import { GridQueryParser } from '../utils/GridQueryParser';
-// import {findSalesPersonBorges} from "../utils/accountUtils"; //TODO remove if necesary
-import { SALES_PERSON_BORGES, CUSTOMER_ANALYSIS_SCORES } from '../constants/';
-import { findSalesPersonBorgesByName } from '../utils/accountUtils';
+
 import BadRequestException from '../exceptions/BadRequestException';
 import {
   DealerTableAssignation,
@@ -37,7 +34,6 @@ import {
   patchDealerCommissionTableAssignations,
 } from '../lib/account';
 import { createDealerWithUser } from '../utils/users';
-import { createSort } from '../utils/common';
 import { DealerCommissionTableAssignment } from '../models/DealerCommissionTableAssignment';
 import { DealerCommissionTable } from '../models/DealerCommissionTable';
 
@@ -187,7 +183,7 @@ class AccountController {
     } else {
       try {
         body['infoComplete'] = true;
-        body = { ...body, salesPersonBorges: findSalesPersonBorgesByName(body.salesPersonBorges) };
+
         const account = await Account.update(body, {
           where: {
             id: id,
@@ -232,7 +228,7 @@ class AccountController {
       let rta: any = {
         ...account,
       };
-      rta.dataValues.salesPersonBorges = findSalesPersonBorges(account?.salesPersonBorges);
+
       return response.status(200).send(rta.dataValues);
     } catch (e) {
       console.log('error', e);
@@ -324,19 +320,7 @@ class AccountController {
         nest: true,
       });
 
-      const res = tables.reduce(
-        (acc, it) => {
-          const el = acc.find(f => f.customerAnalysisScore === it.customerAnalysisScore);
-          if (el) {
-            el.tables.push(it.dealerCommissionTable.code);
-          }
-
-          return acc;
-        },
-        CUSTOMER_ANALYSIS_SCORES.map(c => ({ customerAnalysisScore: c.code, tables: [] } as DealerTableAssignation)),
-      );
-
-      return response.json(res);
+      return response.json(tables);
     } catch (error) {
       console.log(error);
       return response.status(500).send(error);
@@ -367,21 +351,8 @@ class AccountController {
     return response.status(200).send({ message: 'OK' });
   }
 
-  async getSalesPersonBorges(request: Request, response: Response, next: NextFunction) {
-    request ?? request;
-    const rta = SALES_PERSON_BORGES.map((item: { value: any; id: any }) => {
-      return { text: item.value, value: item.id };
-    });
-    try {
-      return response.status(200).send(rta);
-    } catch (error) {
-      console.log(error);
-      return next(new AccountFetchException('Não foi possível obter consultores'));
-    }
-  }
-
   async search(request: Request, response: Response, next: NextFunction) {
-    const { sort, limit, page, filters } = GridQueryParser.parse(request.query);
+    const { limit, page, filters } = GridQueryParser.parse(request.query);
 
     let where: any = getWhereAccount(filters);
 
@@ -392,21 +363,10 @@ class AccountController {
         where: where,
         raw: true,
 
-        order: createSort(sort),
         attributes: [
           'id',
           'name',
           'salesPersonBorges',
-          [
-            Sequelize.literal('(SELECT COUNT(inventories.id) FROM inventories WHERE inventories.accountId = id)'),
-            'inventoryCount',
-          ],
-          [
-            Sequelize.literal(
-              '(SELECT SUM(inventories.vehiclePriceAmount) FROM inventories WHERE inventories.accountId = id)',
-            ),
-            'inventoryValue',
-          ],
           [
             Sequelize.literal('(SELECT COUNT(locations.id) FROM locations WHERE locations.accountId = id)'),
             'locationCount',
@@ -430,7 +390,6 @@ class AccountController {
         rows: body.rows.map(row => {
           return {
             ...row,
-            salesPersonBorges: findSalesPersonBorges(row.salesPersonBorges),
           };
         }),
       };
@@ -458,7 +417,7 @@ class AccountController {
 
         return response.status(200).send(accounts);
       } else if (qt === 'pg-v2') {
-        const { limit, page, filters, sort } = GridQueryParser.parse(request.query);
+        const { limit, page, filters } = GridQueryParser.parse(request.query);
 
         let where: any = getWhereAccount(filters);
 
@@ -467,25 +426,11 @@ class AccountController {
           limit: Number(limit),
           where: where,
           raw: true,
-
-          order: createSort(sort),
           attributes: [
             'id',
             'name',
             'salesPersonBorges',
             'updatedAt',
-            [
-              Sequelize.literal(
-                '(SELECT COUNT(inventories.id) FROM inventories WHERE inventories.accountId = Account.id)',
-              ),
-              'inventoryCount',
-            ],
-            [
-              Sequelize.literal(
-                '(SELECT SUM(inventories.vehiclePriceAmount) FROM inventories WHERE inventories.accountId = Account.id)',
-              ),
-              'inventoryValue',
-            ],
             [
               Sequelize.literal('(SELECT COUNT(locations.id) FROM locations WHERE locations.accountId = Account.id)'),
               'locationCount',
@@ -509,7 +454,6 @@ class AccountController {
           rows: body.rows.map(row => {
             return {
               ...row,
-              salesPersonBorges: findSalesPersonBorges(row.salesPersonBorges),
             };
           }),
         };

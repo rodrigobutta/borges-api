@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { APPLICATION_FILTER_NAMES, INVENTORY_FILTER_NAMES, QUOTE_FILTER_NAMES } from '../constants';
 
 export const stripName = (fullname: string) => {
   const nameParts = fullname.split(/\s+/) || [];
@@ -46,38 +45,6 @@ export const deleteKeyIfNull = <T>({ entity }: { entity: T }) => {
     }
   });
 };
-
-const INVENTORY_BRAND_MODEL_SORT = [INVENTORY_FILTER_NAMES.brandName, INVENTORY_FILTER_NAMES.modelName];
-const BRAND_MODEL_SORT = [APPLICATION_FILTER_NAMES.brandName, APPLICATION_FILTER_NAMES.modelName];
-const CUSTOMER_NAME_SORT = [QUOTE_FILTER_NAMES.customerName, QUOTE_FILTER_NAMES.customerLastName];
-
-export const createSort = (pSort: any = []) => {
-  if (!pSort || !Array.isArray(pSort[0])) {
-    return pSort ?? [['id', 'DESC']];
-  }
-
-  let sortDirection = (pSort[0] as []).pop();
-  const propertyName = pSort[0].length > 1 ? (pSort[0] as []).join('.') : pSort[0].join('.');
-  pSort[0].push(sortDirection);
-  let sort: any[] = pSort;
-
-  if (!!propertyName) {
-    switch (propertyName) {
-      case INVENTORY_FILTER_NAMES.brandModel:
-        sort = INVENTORY_BRAND_MODEL_SORT.map(v => [v, sortDirection]);
-        break;
-      case APPLICATION_FILTER_NAMES.brandModel.join('.'):
-        sort = BRAND_MODEL_SORT.map(v => [...v, sortDirection]);
-        break;
-      case QUOTE_FILTER_NAMES.customerFullame.join('.'):
-        sort = CUSTOMER_NAME_SORT.map(v => [...v, sortDirection]);
-        break;
-    }
-  }
-
-  return sort;
-};
-
 export const isValidJson = (whatever: string) => {
   if (typeof whatever === 'object') {
     return true;

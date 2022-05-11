@@ -9,22 +9,17 @@ import AccountController from './controllers/AccountController';
 import ProfileController from './controllers/ProfileController';
 import LocationController from './controllers/LocationController';
 import QRController from './controllers/QRController';
-import UtilsController from './controllers/UtilsController';
 import BatchController from './controllers/BatchController';
 
 const routes = (app: Express) => {
   const accountController = new AccountController();
   const authController = new AuthController();
-
   const customerController = new CustomerController();
   const fileController = new FileController();
   const qrController = new QRController();
-
   const locationController = new LocationController();
-
   const testController = new TestController();
   const profileController = new ProfileController();
-  const utilsController = new UtilsController();
   const batchController = new BatchController();
 
   app.get('/', (_, res) =>
@@ -103,7 +98,7 @@ const routes = (app: Express) => {
 
   // accounts
   app.get('/accounts', authMiddleware, accountController.list);
-  app.get('/accounts/sales-person-borges', authMiddleware, accountController.getSalesPersonBorges);
+
   app.post('/accounts/search', authMiddleware, accountController.search);
   app.patch('/accounts/:id', authMiddleware, accountController.update);
   app.get('/accounts/:id', authMiddleware, accountController.getById);
@@ -112,10 +107,6 @@ const routes = (app: Express) => {
 
   //QR
   app.post('/qrs', authMiddleware, qrController.post);
-
-  // UTILS
-
-  app.post('/utils/recalculate-borges-price', authMiddleware, utilsController.recalculateBorgesPrice);
 
   app.post('/batch/migrate/user/dealer', authMiddleware, batchController.migrateDealerUser);
 };

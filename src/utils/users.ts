@@ -1,4 +1,4 @@
-import { CONSUMER_ACCOUNT_ID, KEYCLOAK_GROUP_DEALER_NAME, PANEL_ACCOUNT_ID } from '../constants';
+import { ACCOUNT_GROUP_DEALER, CONSUMER_ACCOUNT_ID, KEYCLOAK_GROUP_DEALER_NAME, PANEL_ACCOUNT_ID } from '../constants';
 import { Op } from 'sequelize';
 import { Profile } from '../models/Profile';
 import { Account } from '../models/Account';
@@ -212,15 +212,15 @@ export const sendDealerUserWelcomeMail = async (
   }/register/welcome?usr=${uuid}&acc=${accountId}&eml=${encodeURIComponent(email)}`;
 
   const template = new MailgunTemplate();
-  template.subject = '{{name}}, bem vindo à conta {{accountName}} em Borges';
+  template.subject = '{{name}}, bem vindo à conta {{accountName}} em Aracar';
 
   template.body = kcCreated
     ? `<h1>Estes são seus dados para você inserir pela primeira vez</h1><h2>Usuário: {{email}}</h2><h2>Senha: {{password}}</h2><h3>Você pode entrar clicando <a href="{{link}}">aqui</a></h3><p>Uma vez inserido, o sistema solicitará que você escolha uma nova senha que só você saberá.</p>`
     : `<h1>Seu usuário agora tem acesso à conta {{accountName}}</h1><h3>Entre clicando <a href="{{link}}">aqui</a></h3>`;
 
   const mailer = new MailgunWrapper();
-  mailer.fromEmail = 'noreply@borges.com';
-  mailer.fromTitle = 'Borges';
+  mailer.fromEmail = 'noreply@aracargroup.com';
+  mailer.fromTitle = 'Aracar';
   mailer.init();
 
   if (template && template instanceof MailgunTemplate) {
@@ -251,15 +251,15 @@ export const sendPanelUserWelcomeMail = async (user: Profile, password?: string,
   const welcomeLink = `${settings.urls.panelWeb}?usr=${uuid}&&eml=${encodeURIComponent(email)}`;
 
   const template = new MailgunTemplate();
-  template.subject = '{{name}}, bem vindo ao painel Borges';
+  template.subject = '{{name}}, bem vindo ao painel Aracar';
 
   template.body = kcCreated
     ? `<h1>Estes são seus dados para você inserir pela primeira vez</h1><h2>Usuário: {{email}}</h2><h2>Senha: {{password}}</h2><h3>Você pode entrar clicando <a href="{{link}}">aqui</a></h3><p>Uma vez inserido, o sistema solicitará que você escolha uma nova senha que só você saberá.</p>`
-    : `<h1>Agora você pode acessar o painel Borges clicando <a href="{{link}}">aqui</a></h3>`;
+    : `<h1>Agora você pode acessar o painel Aracar clicando <a href="{{link}}">aqui</a></h3>`;
 
   const mailer = new MailgunWrapper();
-  mailer.fromEmail = 'noreply@borges.com';
-  mailer.fromTitle = 'Borges';
+  mailer.fromEmail = 'noreply@aracargroup.com';
+  mailer.fromTitle = 'Aracar';
   mailer.init();
 
   if (template && template instanceof MailgunTemplate) {
@@ -292,13 +292,13 @@ export const sendConsumerUserWelcomeMailFromDealer = async (user: Profile, accou
   }`;
 
   const template = new MailgunTemplate();
-  template.subject = '{{name}}, {{accountName}} te invitó a Borges';
+  template.subject = '{{name}}, {{accountName}} te invitó a Aracar';
 
   template.body = `<h1>Acceder <a href="{{link}}">acá</a></h3> para continuar desde tu casa junto a {{accountName}}`;
 
   const mailer = new MailgunWrapper();
-  mailer.fromEmail = 'noreply@borges.com';
-  mailer.fromTitle = 'Borges';
+  mailer.fromEmail = 'noreply@aracargroup.com';
+  mailer.fromTitle = 'Aracar';
   mailer.init();
 
   if (template && template instanceof MailgunTemplate) {
@@ -328,15 +328,15 @@ export const sendConsumerUserWelcomeMail = async (user: Profile, password?: stri
   const welcomeLink = `${settings.urls.consumerWeb}?usr=${uuid}&&eml=${encodeURIComponent(email)}`;
 
   const template = new MailgunTemplate();
-  template.subject = '{{name}}, ya podés entrar a tu Borges';
+  template.subject = '{{name}}, ya podés entrar a tu Aracar';
 
   template.body = kcCreated
     ? `<h1>Estos son tus datos para que ingreses por primera vez</h1><h2>Usuario: {{email}}</h2><h2>Contraseña: {{password}}</h2><h3>Podés ingresar haciendo click <a href="{{link}}">acá</a></h3><p>Una vez ingresado, el sistema te pedirá que escojas una contraseña nueva que sólo vos vas a conocer.</p>`
-    : `<h1>Ya podés acceder al panel de Borges haciendo click <a href="{{link}}">acá</a></h3>`;
+    : `<h1>Ya podés acceder al panel de Aracar haciendo click <a href="{{link}}">acá</a></h3>`;
 
   const mailer = new MailgunWrapper();
-  mailer.fromEmail = 'noreply@borges.com';
-  mailer.fromTitle = 'Borges';
+  mailer.fromEmail = 'noreply@aracargroup.com';
+  mailer.fromTitle = 'Aracar';
   mailer.init();
 
   if (template && template instanceof MailgunTemplate) {
@@ -717,7 +717,7 @@ export const createDealerWithUser = async ({
     const account = await createAccount({
       companyIDNumber: companyIDNumber,
       name: accountName,
-      accountGroupId: 1,
+      accountGroupId: ACCOUNT_GROUP_DEALER,
       city: accountCity,
       state: accountState,
       zipCode: accountZipCode,
@@ -940,4 +940,48 @@ export const migrateDealerUser = async ({
   } catch (error) {
     throw new InternalError(error);
   }
+};
+
+export const getExtendedUser = async (user: Profile) => {
+  const profiles = await Profile.findAll({
+    attributes: ['id'],
+    include: [
+      {
+        attributes: ['id', 'name'],
+        model: Account,
+        include: [
+          {
+            attributes: ['id', 'code', 'name'],
+            model: AccountGroup,
+            include: [
+              // {
+              // 	attributes: ['id', 'code', 'name'],
+              // 	model: AccountGroupPermission,
+              // },
+            ],
+          },
+        ],
+      },
+    ],
+    where: {
+      uuid: user.uuid,
+    },
+    raw: true,
+    nest: true,
+  });
+
+  const mappedProfiles = profiles.map(profile => {
+    return {
+      id: profile.id,
+      accountId: profile.account.id,
+      name: profile.account.name,
+      origin: getAccountOrigin(profile.account),
+      group: profile.account.accountGroup,
+    };
+  });
+
+  return {
+    ...user,
+    profiles: mappedProfiles,
+  };
 };
