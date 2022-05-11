@@ -133,11 +133,6 @@ export class Account extends Model {
   financialProviders!: any;
 
   @Column({
-    type: DataType.STRING,
-  })
-  salesPersonBorges!: string;
-
-  @Column({
     type: DataType.BOOLEAN,
   })
   infoComplete!: boolean;

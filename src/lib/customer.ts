@@ -1,5 +1,4 @@
 import { Customer } from '../models/Customer';
-import { CustomerAnalysis } from '../models/CustomerAnalysis';
 import { CustomerFulfillmentStatus } from '../models/CustomerFulfillmentStatus';
 import CustomerNotFoundException from '../exceptions/CustomerNotFoundException';
 
@@ -27,10 +26,6 @@ export const getCustomerById: any = async (customerId: number) => {
   try {
     const customer = await Customer.findByPk(customerId, {
       include: [
-        {
-          model: CustomerAnalysis,
-          as: 'analysis',
-        },
         {
           model: CustomerFulfillmentStatus,
         },
@@ -78,19 +73,4 @@ export const calcCustomerFulfillmentStatus = (customer: Customer): number => {
   }
 
   return fulfillmentStatus;
-};
-
-export const clearCustomerAnalysisCache = async (customerId: number | string) => {
-  await CustomerAnalysis.update(
-    {
-      requestedAt: null,
-    },
-    {
-      where: {
-        customerId,
-      },
-    },
-  );
-
-  return true;
 };

@@ -1,4 +1,4 @@
-import { ACCOUNT_GROUP_DEALER, CONSUMER_ACCOUNT_ID, KEYCLOAK_GROUP_DEALER_NAME, PANEL_ACCOUNT_ID } from '../constants';
+import { ACCOUNT_GROUP_DEALER, CONSUMER_ACCOUNT_ID, KEYCLOAK_GROUP_DEALER_NAME, ADMIN_ACCOUNT_ID } from '../constants';
 import { Op } from 'sequelize';
 import { Profile } from '../models/Profile';
 import { Account } from '../models/Account';
@@ -366,14 +366,14 @@ export const createOrUpdateUser = async ({
   firstName,
   lastName,
   requestedAccounts,
-  authIsPanel, // BEAWARE: This parameter will determine if non specified profiles should be disabled or remain untouch
+  authIsAdmin, // BEAWARE: This parameter will determine if non specified profiles should be disabled or remain untouch
   authAccountId,
 }: {
   email: string;
   firstName: string;
   lastName: string;
   requestedAccounts?: number[];
-  authIsPanel: boolean;
+  authIsAdmin: boolean;
   authAccountId?: number;
 }) => {
   const responseFlags = {
@@ -387,7 +387,7 @@ export const createOrUpdateUser = async ({
   if (requestedAccounts && requestedAccounts.length > 0) {
     // if accounts param in body is present, we're coming from a panel request which should have defined the accounts for the user
     requestedAccounts.forEach((a: any) => accounts.push(a));
-  } else if (!requestedAccounts && authAccountId && !authIsPanel) {
+  } else if (!requestedAccounts && authAccountId && !authIsAdmin) {
     // if no account is specified, we assume this is a Dealer's call, so we create the user for that dealer account
     accounts.push(authAccountId);
   } else {
@@ -403,7 +403,7 @@ export const createOrUpdateUser = async ({
     return g ? [...acc, g] : acc;
   }, [] as string[]);
 
-  if (!authIsPanel && accounts.find((a: number) => a === PANEL_ACCOUNT_ID)) {
+  if (!authIsAdmin && accounts.find((a: number) => a === ADMIN_ACCOUNT_ID)) {
     throw new BadRequestException('Un usuario sin permisos de Panel no puede crear usuarios de Panel');
   }
 
@@ -413,10 +413,10 @@ export const createOrUpdateUser = async ({
       firstName,
       lastName,
       attributes: {
-        origin: authIsPanel ? 'panel' : 'dealer',
+        origin: authIsAdmin ? 'panel' : 'dealer',
       },
       groups,
-      authIsPanel,
+      authIsAdmin,
     });
 
     tmpPassword = password || null;
@@ -442,7 +442,7 @@ export const createOrUpdateUser = async ({
 
     // only delete profiles if the call was made form panel, to avoid a dealer update that removes a panel account or so
     let deletedProfiles: any = [];
-    if (authIsPanel) {
+    if (authIsAdmin) {
       deletedProfiles = await Promise.all(
         currentAccountIds.map(async currentAccountId => {
           if (!accounts.find(a => a === currentAccountId)) {
@@ -521,7 +521,7 @@ export const createOrUpdateUser = async ({
               responseFlags.dealerUserWasCreated = true;
               await sendDealerUserWelcomeMail(user, password, userCreated, account);
             }
-            if (authIsPanel && isPanelAccount(accountId)) {
+            if (authIsAdmin && isPanelAccount(accountId)) {
               responseFlags.panelUserWasCreated = true;
               await sendPanelUserWelcomeMail(user, password, userCreated);
             }
@@ -577,18 +577,18 @@ export const createOrUpdateUser = async ({
   }
 };
 
-export const deleteUser = async (uuid: string, authIsPanel?: boolean, accountId?: number) => {
+export const deleteUser = async (uuid: string, authIsAdmin?: boolean, accountId?: number) => {
   try {
     const profiles = await getUserProfiles(uuid);
     const otherProfiles = profiles.filter(p => p.accountId !== accountId);
-    if (authIsPanel || (!authIsPanel && otherProfiles.length === 0)) {
+    if (authIsAdmin || (!authIsAdmin && otherProfiles.length === 0)) {
       await setUserEnabled(uuid, false);
     }
 
     await Profile.destroy({
       where: {
         uuid,
-        ...(!authIsPanel && { accountId }),
+        ...(!authIsAdmin && { accountId }),
       },
     });
 
@@ -599,7 +599,7 @@ export const deleteUser = async (uuid: string, authIsPanel?: boolean, accountId?
   }
 };
 
-export const restoreUser = async (uuid: string, authIsPanel?: boolean, accountId?: number) => {
+export const restoreUser = async (uuid: string, authIsAdmin?: boolean, accountId?: number) => {
   try {
     await setUserEnabled(uuid, true);
 
@@ -607,7 +607,7 @@ export const restoreUser = async (uuid: string, authIsPanel?: boolean, accountId
     await Profile.restore({
       where: {
         uuid,
-        ...(!authIsPanel && { accountId }),
+        ...(!authIsAdmin && { accountId }),
       },
     });
 
@@ -645,7 +645,7 @@ export const createConsumerUserToExistingCustomer = async ({
         lastName: customer.lastName,
         requestedAccounts: [CONSUMER_ACCOUNT_ID],
         authAccountId,
-        authIsPanel: false,
+        authIsAdmin: false,
       });
     } catch (error) {
       console.log(error);
@@ -730,7 +730,7 @@ export const createDealerWithUser = async ({
       firstName,
       lastName,
       requestedAccounts: [account.id],
-      authIsPanel: false,
+      authIsAdmin: false,
     });
     // } catch (error) {
     // 	console.log(error);
@@ -858,15 +858,15 @@ export const updateUserProfilesPermissions = async ({
 
 export const migrateDealerUser = async ({
   email,
-  authIsPanel,
+  authIsAdmin,
   password,
 }: {
   email: string;
-  authIsPanel: boolean;
+  authIsAdmin: boolean;
   password: string;
   testRun?: boolean;
 }) => {
-  if (!authIsPanel) {
+  if (!authIsAdmin) {
     throw new BadRequestException('Un usuario sin permisos de Panel no puede migrar usuarios');
   }
 
@@ -892,7 +892,7 @@ export const migrateDealerUser = async ({
         origin: 'panel',
       },
       groups: [KEYCLOAK_GROUP_DEALER_NAME],
-      authIsPanel: true,
+      authIsAdmin: true,
       requestNewPassword: false,
       fixedPassword: password,
     });

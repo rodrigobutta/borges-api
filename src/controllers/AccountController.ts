@@ -222,9 +222,6 @@ class AccountController {
 
     try {
       const account = await Account.findByPk(id);
-      // TODO REMOVE on next iteration
-      //* This should be removed once salesPersonBorges is a real entity on the DB
-      //* or references a user or other entity from the db
       let rta: any = {
         ...account,
       };
@@ -294,10 +291,10 @@ class AccountController {
   }
 
   async getAssignedCommissionTables(request: Request, response: Response, next: NextFunction) {
-    const { authIsPanel } = request;
+    const { authIsAdmin } = request;
     const { accountId } = request.params;
 
-    if (!authIsPanel) {
+    if (!authIsAdmin) {
       return next(new BadRequestException(`This endpoint needs to be consumed by a panel profile.`));
     }
     if (!accountId) {
@@ -328,13 +325,13 @@ class AccountController {
   }
 
   async patchAssignedCommissionTables(request: Request, response: Response, next: NextFunction) {
-    const { authIsPanel } = request;
+    const { authIsAdmin } = request;
     const { accountId } = request.params;
     const { data } = request.body;
 
     const assigns = data as unknown as DealerTableAssignation[];
 
-    if (!authIsPanel) {
+    if (!authIsAdmin) {
       return next(new BadRequestException(`This endpoint needs to be consumed by a panel profile.`));
     }
     if (!accountId) {
@@ -366,7 +363,6 @@ class AccountController {
         attributes: [
           'id',
           'name',
-          'salesPersonBorges',
           [
             Sequelize.literal('(SELECT COUNT(locations.id) FROM locations WHERE locations.accountId = id)'),
             'locationCount',
@@ -382,9 +378,6 @@ class AccountController {
         ],
       });
 
-      // TODO REMOVE on next iteration
-      //* This should be removed once salesPersonBorges is a real entity on the DB
-      //* or references a user or other entity from the db
       const rta = {
         ...body,
         rows: body.rows.map(row => {
@@ -429,7 +422,6 @@ class AccountController {
           attributes: [
             'id',
             'name',
-            'salesPersonBorges',
             'updatedAt',
             [
               Sequelize.literal('(SELECT COUNT(locations.id) FROM locations WHERE locations.accountId = Account.id)'),
@@ -446,9 +438,6 @@ class AccountController {
           ],
         });
 
-        // TODO REMOVE on next iteration
-        //* This should be removed once salesPersonBorges is a real entity on the DB
-        //* or references a user or other entity from the db
         const rta = {
           ...body,
           rows: body.rows.map(row => {
@@ -528,7 +517,7 @@ class AccountController {
 
   async delete(request: Request, response: Response, next: NextFunction) {
     const { accountId } = request.params;
-    const { authIsPanel } = request;
+    const { authIsAdmin } = request;
 
     if (!accountId) {
       throw next(new BadRequestException('Account ID not present'));
@@ -537,7 +526,7 @@ class AccountController {
     const id = parseInt(accountId);
 
     try {
-      await deleteAccount(id, authIsPanel);
+      await deleteAccount(id, authIsAdmin);
 
       return response.status(200).send({
         message: 'Cuenta eliminada',

@@ -4,7 +4,7 @@ import { migrateDealerUser } from '../utils/users';
 
 class BatchController {
   async migrateDealerUser(request: Request, response: Response, next: NextFunction) {
-    const { authIsPanel } = request;
+    const { authIsAdmin } = request;
     const { email, password } = request.body;
 
     try {
@@ -19,7 +19,7 @@ class BatchController {
       } = await migrateDealerUser({
         email,
         password,
-        authIsPanel,
+        authIsAdmin,
       });
 
       return response.status(200).json({

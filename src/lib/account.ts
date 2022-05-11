@@ -1,4 +1,4 @@
-import { CONSUMER_ACCOUNT_ID, PANEL_ACCOUNT_ID } from '../constants';
+import { CONSUMER_ACCOUNT_ID, ADMIN_ACCOUNT_ID } from '../constants';
 import AlreadyExistsException from '../exceptions/AlreadyExistsException';
 import ForbiddenException from '../exceptions/ForbiddenException';
 import InternalError from '../exceptions/InternalError';
@@ -62,7 +62,7 @@ export const getAccountOrigin = (account: Account) => {
   if (account.mlSellerId) {
     return 'MercadoLibre';
   }
-  if (account.id === PANEL_ACCOUNT_ID) {
+  if (account.id === ADMIN_ACCOUNT_ID) {
     return 'Perfil: Backoffice';
   }
   if (account.id === CONSUMER_ACCOUNT_ID) {
@@ -99,7 +99,7 @@ export const getAccountGroupPermissions = async (accountGroupId: number) => {
 };
 
 export const isDealerAccount = (accountId: number): boolean => {
-  if (accountId === PANEL_ACCOUNT_ID) {
+  if (accountId === ADMIN_ACCOUNT_ID) {
     return false;
   }
   if (accountId === CONSUMER_ACCOUNT_ID) {
@@ -111,14 +111,14 @@ export const isDealerAccount = (accountId: number): boolean => {
 
 export const isConsumerAccount = (accountId: number): boolean => !!(accountId === CONSUMER_ACCOUNT_ID);
 
-export const isPanelAccount = (accountId: number): boolean => !!(accountId === PANEL_ACCOUNT_ID);
+export const isPanelAccount = (accountId: number): boolean => !!(accountId === ADMIN_ACCOUNT_ID);
 
-export const deleteAccount = async (accountId: number, authIsPanel?: boolean) => {
+export const deleteAccount = async (accountId: number, authIsAdmin?: boolean) => {
   try {
-    if (!authIsPanel) {
+    if (!authIsAdmin) {
       throw new ForbiddenException();
     }
-    if (accountId === CONSUMER_ACCOUNT_ID || accountId === PANEL_ACCOUNT_ID) {
+    if (accountId === CONSUMER_ACCOUNT_ID || accountId === ADMIN_ACCOUNT_ID) {
       throw new ForbiddenException('Esta cuenta es de sistema y no puede ser eliminada');
     }
 

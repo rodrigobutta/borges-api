@@ -5,7 +5,7 @@ import AuthUserHasNoCustomerException from '../exceptions/AuthUserHasNoCustomerE
 import { getCustomerById } from '../lib/customer';
 import { Profile } from '../models/Profile';
 
-import { CONSUMER_ACCOUNT_ID, PANEL_ACCOUNT_ID } from '../constants';
+import { CONSUMER_ACCOUNT_ID, ADMIN_ACCOUNT_ID } from '../constants';
 import { getProfile, getUserProfiles } from '../utils/users';
 import InternalError from '../exceptions/InternalError';
 // import { Onboard } from '../models/Onboard';
@@ -34,7 +34,7 @@ class AuthController {
 
       const profiles = await getUserProfiles(authUserUUID);
       const dealerProfiles = profiles.filter(
-        p => p.accountId !== CONSUMER_ACCOUNT_ID && p.accountId !== PANEL_ACCOUNT_ID,
+        p => p.accountId !== CONSUMER_ACCOUNT_ID && p.accountId !== ADMIN_ACCOUNT_ID,
       );
       const profile =
         dealerProfiles && dealerProfiles.length > 0 // try to fetch a dealer as default, if has no dealer, any other (doesn't matter since this profile is only used for dealer purposes)

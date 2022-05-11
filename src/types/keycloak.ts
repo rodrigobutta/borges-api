@@ -12,8 +12,8 @@ export interface KeycloakJWT extends jwt.JwtPayload {
   client?: string | undefined;
 }
 
-export enum KeycloakGroup {
-  Panel = 'panel',
-  Dealer = 'dealer',
-  Consumer = 'consumer',
+export enum KeycloakClient {
+  Web = 'borges-web-client',
+  Api = 'borges-api-client',
+  App = 'borges-app-client',
 }

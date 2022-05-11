@@ -1,7 +1,7 @@
 import { Filter } from '../dto/Filter';
 
 export const CONSUMER_ACCOUNT_ID = 1;
-export const PANEL_ACCOUNT_ID = 2;
+export const ADMIN_ACCOUNT_ID = 2;
 export const CONSUMER_API_USER_ID = 1;
 
 export const KEYCLOAK_GROUP_PANEL_NAME = 'panel'; // contains keycloak panel roles;

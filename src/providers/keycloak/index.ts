@@ -6,7 +6,7 @@ import KeycloakException from '../../exceptions/KeycloakException';
 import KeycloakValidationException from '../../exceptions/KeycloakValidationException';
 import { checkIfValidUUID } from '../../utils/common';
 import {
-  PANEL_ACCOUNT_ID,
+  ADMIN_ACCOUNT_ID,
   KEYCLOAK_GROUP_PANEL_NAME,
   CONSUMER_ACCOUNT_ID,
   KEYCLOAK_GROUP_DEALER_NAME,
@@ -49,7 +49,7 @@ export const addKeycloakUser = async ({
   lastName,
   attributes = {},
   groups = null,
-  authIsPanel = false,
+  authIsAdmin = false,
   requestNewPassword = true,
   fixedPassword = null,
 }: {
@@ -58,7 +58,7 @@ export const addKeycloakUser = async ({
   lastName: string;
   attributes: any;
   groups?: string[] | null;
-  authIsPanel?: boolean;
+  authIsAdmin?: boolean;
   requestNewPassword?: boolean;
   fixedPassword?: string | null;
 }) => {
@@ -137,7 +137,7 @@ export const addKeycloakUser = async ({
           userRestored = true;
         }
 
-        if (authIsPanel) {
+        if (authIsAdmin) {
           // update KC user groups depending on the assigned groups in our DB
           // TODO enhace this with a group per user fetch
           if (groups && groups.indexOf(KEYCLOAK_GROUP_DEALER_NAME) >= 0) {
@@ -359,7 +359,7 @@ export const getUserByEmail = async (email: string, prevKcToken = null) => {
 };
 
 export const getKeycloakGroupForAccount = (accountId: number) =>
-  accountId === PANEL_ACCOUNT_ID
+  accountId === ADMIN_ACCOUNT_ID
     ? KEYCLOAK_GROUP_PANEL_NAME
     : accountId !== CONSUMER_ACCOUNT_ID
     ? KEYCLOAK_GROUP_DEALER_NAME

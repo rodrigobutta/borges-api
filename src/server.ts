@@ -5,7 +5,7 @@ import { errorHandler, routeNotFoundHandler } from './middlewares/errorHandler';
 import routes from './routes';
 import { sequelize } from './providers/sequelize';
 import settings from './settings';
-import { KeycloakJWT, KeycloakGroup } from './types/keycloak';
+import { KeycloakJWT } from './types/keycloak';
 import { Profile } from './models/Profile';
 import { getApiUrl } from './lib/url';
 import { Client } from './models/Client';
@@ -24,13 +24,10 @@ declare global {
 
       authCustomerId?: number | null;
 
-      // Depends on the Keycloak client that was used to authenticate
-      authGroup: KeycloakGroup;
-
       authClient?: Client | null;
 
       // Depends on the assigned group or roles to the Keycloak user
-      authIsPanel: boolean;
+      authIsAdmin: boolean;
       authIsDealer: boolean;
       authIsConsumer: boolean;
     }

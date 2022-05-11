@@ -4,7 +4,7 @@ import { Customer } from '../models/Customer';
 import CustomerNotFoundException from '../exceptions/CustomerNotFoundException';
 import CustomerUpdateException from '../exceptions/CustomerUpdateException';
 
-import { calcCustomerFulfillmentStatus, getCustomerById, clearCustomerAnalysisCache } from '../lib/customer'; // pruebasApiBot add customerByCpf
+import { calcCustomerFulfillmentStatus, getCustomerById } from '../lib/customer'; // pruebasApiBot add customerByCpf
 
 import ProfileNotFoundException from '../exceptions/ProfileNotFoundException';
 import BadRequestException from '../exceptions/BadRequestException';
@@ -105,11 +105,6 @@ class CustomerController {
           },
         },
       );
-
-      // Reset the Analysis cache since the jobType is being updated
-      if (updatingFields.jobType || updatingFields.declaredIncome) {
-        await clearCustomerAnalysisCache(customerId);
-      }
 
       const customer = await getCustomerById(customerId);
       if (!customer) {

@@ -25,7 +25,7 @@ const ITEMS_PER_PAGE = 20;
 
 class ProfileController {
   async list(request: Request, response: Response) {
-    const { authAccountId, authIsPanel } = request;
+    const { authAccountId, authIsAdmin } = request;
     const {
       page = null,
       search = null,
@@ -49,7 +49,7 @@ class ProfileController {
       },
     };
 
-    if (!authIsPanel) {
+    if (!authIsAdmin) {
       // a non panel user will always have restricted results to it's account
       where = {
         ...where,
@@ -160,8 +160,8 @@ class ProfileController {
   }
 
   async permissions(request: Request, response: Response, next: NextFunction) {
-    const { authIsPanel } = request;
-    if (!authIsPanel) {
+    const { authIsAdmin } = request;
+    if (!authIsAdmin) {
       return next(new ForbiddenException());
     }
 
@@ -237,7 +237,7 @@ class ProfileController {
 
   async post(request: Request, response: Response, next: NextFunction) {
     const { email, firstName, lastName, accounts } = request.body;
-    const { authAccountId, authIsPanel } = request;
+    const { authAccountId, authIsAdmin } = request;
 
     try {
       const res = await createOrUpdateUser({
@@ -246,7 +246,7 @@ class ProfileController {
         lastName,
         requestedAccounts: accounts as number[],
         authAccountId,
-        authIsPanel,
+        authIsAdmin,
       });
 
       return response.status(200).send(res);
@@ -259,7 +259,7 @@ class ProfileController {
   async patch(request: Request, response: Response, next: NextFunction) {
     // const { uuid } = request.params; // is being received, but we dont need it anymore for the createOrUpdate
     const { email, firstName, lastName, accounts } = request.body;
-    const { authAccountId, authIsPanel } = request;
+    const { authAccountId, authIsAdmin } = request;
 
     try {
       const res = await createOrUpdateUser({
@@ -268,7 +268,7 @@ class ProfileController {
         lastName,
         requestedAccounts: accounts as number[],
         authAccountId,
-        authIsPanel,
+        authIsAdmin,
       });
 
       return response.status(200).send(res);
@@ -280,10 +280,10 @@ class ProfileController {
 
   async delete(request: Request, response: Response, next: NextFunction) {
     const { uuid } = request.params;
-    const { authIsPanel, authAccountId } = request;
+    const { authIsAdmin, authAccountId } = request;
 
     try {
-      await deleteUser(uuid, authIsPanel, authAccountId);
+      await deleteUser(uuid, authIsAdmin, authAccountId);
 
       return response.status(200).send({
         message: 'Eliminado',
@@ -296,10 +296,10 @@ class ProfileController {
 
   async renable(request: Request, response: Response, next: NextFunction) {
     const { uuid } = request.params;
-    const { authIsPanel, authAccountId } = request;
+    const { authIsAdmin, authAccountId } = request;
 
     try {
-      await restoreUser(uuid, authIsPanel, authAccountId);
+      await restoreUser(uuid, authIsAdmin, authAccountId);
 
       return response.status(200).send({
         message: 'Restaurado',
