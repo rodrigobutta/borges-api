@@ -10,6 +10,7 @@ import ProfileController from './controllers/ProfileController';
 import LocationController from './controllers/LocationController';
 import QRController from './controllers/QRController';
 import BatchController from './controllers/BatchController';
+import TrackerController from './controllers/TrackerController';
 
 const routes = (app: Express) => {
   const accountController = new AccountController();
@@ -21,6 +22,7 @@ const routes = (app: Express) => {
   const testController = new TestController();
   const profileController = new ProfileController();
   const batchController = new BatchController();
+  const trackerController = new TrackerController();
 
   app.get('/', (_, res) =>
     res.json({
@@ -109,6 +111,9 @@ const routes = (app: Express) => {
   app.post('/qrs', authMiddleware, qrController.post);
 
   app.post('/batch/migrate/user/dealer', authMiddleware, batchController.migrateDealerUser);
+
+  app.post('/tracker', trackerController.post);
+  app.post('/tracker/:trackerCode/track', trackerController.track);
 };
 
 export default routes;

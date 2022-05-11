@@ -18,6 +18,8 @@ import { AccountGroup } from '../models/AccountGroup';
 import { AccountGroupPermission } from '../models/AccountGroupPermission';
 import { Client } from '../models/Client';
 import { AccountGroupRole } from '../models/AccountGroupRole';
+import { Track } from '../models/Track';
+import { Tracker } from '../models/Tracker';
 
 export const sequelize = new Sequelize(mysql.NAME, mysql.USERNAME, mysql.PASSWORD, {
   host: mysql.HOST,
@@ -43,5 +45,7 @@ export const sequelize = new Sequelize(mysql.NAME, mysql.USERNAME, mysql.PASSWOR
     AccountGroupPermission,
     AccountGroupRole,
     Client,
+    Track,
+    Tracker,
   ],
 });
