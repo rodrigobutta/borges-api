@@ -112,8 +112,8 @@ const routes = (app: Express) => {
 
   app.post('/batch/migrate/user/dealer', authMiddleware, batchController.migrateDealerUser);
 
-  app.post('/tracker', trackerController.post);
-  app.post('/tracker/:trackerCode/track', trackerController.track);
+  app.post('/tracker', authMiddleware, trackerController.post);
+  app.post('/tracker/:trackerId/track', trackerController.track);
 };
 
 export default routes;

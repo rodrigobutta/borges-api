@@ -22,7 +22,17 @@ export class Tracker extends Model {
   @Column({
     type: DataType.STRING,
   })
+  name!: string;
+
+  @Column({
+    type: DataType.STRING,
+  })
   code!: string;
+
+  @Column({
+    type: DataType.JSON,
+  })
+  data!: any;
 
   @BelongsTo(() => Profile)
   profile: Profile = new Profile();

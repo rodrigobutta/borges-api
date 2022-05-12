@@ -7,8 +7,10 @@ class TrackerController {
   async post(request: Request, response: Response, next: NextFunction) {
     try {
       const { authProfileId } = request;
+      const { trackerId = null } = request.body;
 
       const tracker = await Tracker.create({
+        ...(trackerId && { id: trackerId }),
         profileId: authProfileId,
       });
       return response.status(200).send(tracker);
@@ -19,13 +21,13 @@ class TrackerController {
 
   async track(request: Request, response: Response, next: NextFunction) {
     try {
-      const { trackerCode } = request.params;
+      const { trackerId } = request.params;
       const { lat, lng } = request.body;
 
       const location = await Track.create({
         lat,
         lng,
-        trackerCode,
+        trackerId,
       });
       return response.status(200).send(location);
     } catch (error) {

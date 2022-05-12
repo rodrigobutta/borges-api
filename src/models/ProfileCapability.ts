@@ -3,14 +3,12 @@ import { Account } from './Account';
 import { AccountGroupPermission } from './AccountGroupPermission';
 import { Profile } from './Profile';
 
-const UNIQUE_CONSTRAINT_PROFILE_ACCOUNT: string = 'unique_profile_account';
-
 @Table({
   tableName: 'profileCapability',
   timestamps: true,
   indexes: [
     {
-      name: UNIQUE_CONSTRAINT_PROFILE_ACCOUNT,
+      name: 'unique_profile_account',
       unique: true,
       fields: ['profileId', 'accountId'],
     },
@@ -24,7 +22,7 @@ export class ProfileCapability extends Model {
   @Column({
     type: DataType.INTEGER,
   })
-  profileId!: number;
+  profileId!: string;
 
   @ForeignKey(() => Account)
   @Column({

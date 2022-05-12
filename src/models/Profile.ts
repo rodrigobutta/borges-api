@@ -6,7 +6,7 @@ import { Customer } from './Customer';
 const UNIQUE_CONSTRAINT_USER_UUID_ACCOUNT: string = 'unique_user_uuid_account';
 
 @Table({
-  tableName: 'users',
+  tableName: 'profile',
   timestamps: true,
   indexes: [
     {
@@ -18,6 +18,13 @@ const UNIQUE_CONSTRAINT_USER_UUID_ACCOUNT: string = 'unique_user_uuid_account';
   paranoid: true,
 })
 export class Profile extends Model {
+  // @Column({
+  //   type: DataType.UUID,
+  //   defaultValue: DataType.UUIDV4,
+  //   primaryKey: true,
+  // })
+  // id!: string;
+
   @Column({
     type: DataType.STRING(40),
     unique: true,

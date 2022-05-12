@@ -16,11 +16,16 @@ export class Track extends Model {
   })
   lng!: string;
 
+  @Column({
+    type: DataType.JSON,
+  })
+  data!: any;
+
   @ForeignKey(() => Tracker)
   @Column({
     type: DataType.INTEGER,
   })
-  trackerId!: number;
+  trackerId!: string;
 
   @BelongsTo(() => Tracker, {
     foreignKey: 'trackerId',
