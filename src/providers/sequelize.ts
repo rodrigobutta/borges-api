@@ -20,6 +20,9 @@ import { Client } from '../models/Client';
 import { AccountGroupRole } from '../models/AccountGroupRole';
 import { Track } from '../models/Track';
 import { Tracker } from '../models/Tracker';
+import { TrackerActivity } from '../models/TrackerActivity';
+import { TrackerActivityType } from '../models/TrackerActivityType';
+import { TrackerLocation } from '../models/TrackerLocation';
 
 export const sequelize = new Sequelize(mysql.NAME, mysql.USERNAME, mysql.PASSWORD, {
   host: mysql.HOST,
@@ -47,5 +50,8 @@ export const sequelize = new Sequelize(mysql.NAME, mysql.USERNAME, mysql.PASSWOR
     Client,
     Track,
     Tracker,
+    TrackerActivity,
+    TrackerActivityType,
+    TrackerLocation,
   ],
 });

@@ -34,6 +34,21 @@ export class Tracker extends Model {
   })
   data!: any;
 
+  @Column({
+    type: DataType.DATE,
+  })
+  checkinAt!: Date;
+
+  @Column({
+    type: DataType.DATE,
+  })
+  beaconAt!: Date;
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  batteryLevel!: number;
+
   @BelongsTo(() => Profile)
   profile: Profile = new Profile();
 }
